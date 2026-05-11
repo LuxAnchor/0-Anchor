@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+============================================
+AccessibilityService 配置文件
+============================================
+
+关键配置:
+- eventTypes: 监听所有窗口相关的事件
+- accessibilityFlags: 添加 flagIncludeNotImportantViews 和 flagReportViewIds
+  来增强监听能力
+- canPerformGestures: 支持执行全局操作（返回桌面）
+- notificationTimeout: 0（最快响应）
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/accessibility_service_description"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowsChanged|typeWindowContentChanged|typeViewClicked|typeViewFocused"
+    android:accessibilityFlags="flagDefault|flagIncludeNotImportantViews|flagReportViewIds|flagRequestEnhancedWebAccessibility"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:notificationTimeout="0"
+    android:canRetrieveWindowContent="true"
+    android:canPerformGestures="true" />

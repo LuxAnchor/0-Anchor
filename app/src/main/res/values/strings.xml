@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">0-Anchor</string>
+    <string name="accessibility_service_description">此服务用于检测抖音/TikTok 启动并显示干预提示，帮助您保持专注。支持任务模式和娱乐模式双路径干预。请在系统设置中启用此服务。</string>
+    <string name="overlay_title">0-Anchor</string>
+    <string name="overlay_subtitle">检测到您正在打开抖音/TikTok\n请选择模式</string>
+    <string name="task_mode_btn">任务模式</string>
+    <string name="entertain_mode_btn">娱乐模式</string>
+    <string name="task_input_hint">输入当前任务描述...</string>
+    <string name="go_home">返回桌面</string>
+    <string name="cooldown_hint">处于冷却中，还剩 %d 分钟可再次进入娱乐模式</string>
+    <string name="entertain_countdown_label">娱乐模式 — 剩余时间</string>
+    <string name="end_early">提前结束</string>
+    <string name="task_ended">任务已结束: %s</string>
+    <string name="entertain_time_up">娱乐时间结束</string>
+    <string name="cooldown_toast">当前处于冷却期，无法使用娱乐模式</string>
+    <string name="enable_accessibility">启用无障碍服务</string>
+    <string name="enable_overlay">启用悬浮窗权限</string>
+    <string name="service_status">服务状态</string>
+    <string name="service_running">运行中</string>
+    <string name="service_stopped">已停止</string>
+    <string name="notification_title">Anchor 核心监控</string>
+    <string name="notification_content">前额叶强制接管中…</string>
+    <string name="main_title">0-Anchor</string>
+    <string name="main_subtitle">既然大脑的刹车失灵，就交给代码执行。</string>
+    <string name="cooldown_setting_title">冷却设置</string>
+    <string name="cooldown_setting_desc">设置娱乐模式冷却时间</string>
+    <string name="cooldown_minutes">%d 分钟</string>
+</resources>

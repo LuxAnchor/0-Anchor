@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  启动图标前景（占位矢量图）
+  目的：仅为解决 @mipmap/ic_launcher 引用缺失导致的编译失败。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 简单圆形 + “M” 字母，占位即可 -->
+    <path
+        android:fillColor="#3F51B5"
+        android:pathData="M54,10a44,44 0,1 1,0 88a44,44 0,1 1,0 -88z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,70V38h6l8,14l8,-14h6v32h-6V49l-8,14h-0.2l-8,-14v21z" />
+</vector>
+

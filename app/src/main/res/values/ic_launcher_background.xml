@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 启动图标背景色（最小占位，保证能顺利编译出 APK） -->
+    <color name="ic_launcher_background">#FFFFFF</color>
+</resources>
+
