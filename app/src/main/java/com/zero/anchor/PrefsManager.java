@@ -20,12 +20,18 @@ public class PrefsManager {
 
     private static final String KEY_BLOCKING_ACTIVE = "blocking_active";
     private static final String KEY_LAST_BLOCKED_PACKAGE = "last_blocked_package";
+    private static final String KEY_TASK_AUTO_CENTER_SECONDS = "task_auto_center_seconds";
 
     private static final int DEFAULT_COOLDOWN_MINUTES = 60;
     private static final int ENTERTAINMENT_COOLDOWN_MINUTES = 60;
     private static final int MIN_COOLDOWN_MINUTES = 60;
     private static final int MAX_COOLDOWN_MINUTES = 180;
     private static final int COOLDOWN_STEP_MINUTES = 30;
+
+    private static final int DEFAULT_AUTO_CENTER_SECONDS = 60;
+    private static final int MIN_AUTO_CENTER_SECONDS = 30;
+    private static final int MAX_AUTO_CENTER_SECONDS = 600;
+    private static final int AUTO_CENTER_STEP_SECONDS = 30;
 
     private final SharedPreferences prefs;
 
@@ -185,5 +191,30 @@ public class PrefsManager {
             .putLong(KEY_TIMER_START_TIME, 0)
             .putLong(KEY_ENTERTAIN_END_TIME, 0)
             .apply();
+    }
+
+    public int getAutoCenterSeconds() {
+        return prefs.getInt(KEY_TASK_AUTO_CENTER_SECONDS, DEFAULT_AUTO_CENTER_SECONDS);
+    }
+
+    public void setAutoCenterSeconds(int seconds) {
+        int clampedSeconds = Math.max(MIN_AUTO_CENTER_SECONDS, Math.min(MAX_AUTO_CENTER_SECONDS, seconds));
+        prefs.edit().putInt(KEY_TASK_AUTO_CENTER_SECONDS, clampedSeconds).apply();
+    }
+
+    public boolean increaseAutoCenterSeconds() {
+        int current = getAutoCenterSeconds();
+        if (current >= MAX_AUTO_CENTER_SECONDS) return false;
+        int newValue = Math.min(MAX_AUTO_CENTER_SECONDS, current + AUTO_CENTER_STEP_SECONDS);
+        setAutoCenterSeconds(newValue);
+        return true;
+    }
+
+    public boolean decreaseAutoCenterSeconds() {
+        int current = getAutoCenterSeconds();
+        if (current <= MIN_AUTO_CENTER_SECONDS) return false;
+        int newValue = Math.max(MIN_AUTO_CENTER_SECONDS, current - AUTO_CENTER_STEP_SECONDS);
+        setAutoCenterSeconds(newValue);
+        return true;
     }
 }

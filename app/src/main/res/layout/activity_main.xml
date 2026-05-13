@@ -388,6 +388,78 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/status_card_auto_center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="20dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="十、气泡居中设置"
+                android:textSize="18sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="任务气泡自动回到屏幕居中间的间隔"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:paddingBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tv_auto_center_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="60 秒"
+                    android:textSize="16sp"
+                    android:textColor="#333333"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/btn_decrease_auto_center"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:text="-"
+                    android:textSize="32sp"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/button_blue"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:layout_marginEnd="12dp" />
+
+                <Button
+                    android:id="@+id/btn_increase_auto_center"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:text="+"
+                    android:textSize="32sp"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/button_blue"
+                    android:gravity="center"
+                    android:includeFontPadding="false" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -399,7 +471,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="十、测试"
+                android:text="十一、测试"
                 android:textSize="18sp"
                 android:textColor="#333333"
                 android:textStyle="bold"

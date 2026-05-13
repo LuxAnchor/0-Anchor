@@ -40,6 +40,8 @@ public class InterventionOverlay {
     private CountDownTimer entertainTimer;
     private long taskStartTimeMs = 0;
     private Runnable onGoHomeCallback;
+    private Runnable autoCenterRunnable;
+    private WindowManager.LayoutParams taskParams;
 
     private String currentPackageName = "";
     private String currentAppName = "";
@@ -283,6 +285,16 @@ public class InterventionOverlay {
         subtitle.setGravity(Gravity.CENTER);
         card.addView(subtitle);
 
+        PrefsManager prefs = MindfulAccessibilityService.getPrefsManager();
+        int cooldownMinutes = (prefs != null) ? prefs.getCooldownDurationMinutes() : 60;
+
+        TextView cooldownHint = new TextView(context);
+        cooldownHint.setText("（冷却时间 " + cooldownMinutes + " 分钟）");
+        cooldownHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        cooldownHint.setTextColor(0xFF666666);
+        cooldownHint.setGravity(Gravity.CENTER);
+        card.addView(cooldownHint);
+
         addSpace(card, 24);
 
         int[] minutesOptions = {5, 10, 15, 30, 60};
@@ -346,24 +358,26 @@ public class InterventionOverlay {
 
         TextView taskLabel = new TextView(context);
         taskLabel.setText("任务：" + taskDescription);
-        taskLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        taskLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         taskLabel.setTextColor(0xFFFFFFFF);
-        taskLabel.setGravity(Gravity.END);
-        taskLabel.setMaxLines(1);
+        taskLabel.setTextColor(0xFFFFFFFF);
+        taskLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        taskLabel.setGravity(Gravity.CENTER);
+        taskLabel.setMaxLines(2);
         taskLabel.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         ));
         card.addView(taskLabel);
 
-        addSpace(card, 4);
+        addSpace(card, 8);
 
         taskTimerDisplay = new TextView(context);
         taskTimerDisplay.setText("00:00:00");
         taskTimerDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         taskTimerDisplay.setTextColor(0xFF4CAF50);
         taskTimerDisplay.setTypeface(android.graphics.Typeface.MONOSPACE);
-        taskTimerDisplay.setGravity(Gravity.END);
+        taskTimerDisplay.setGravity(Gravity.CENTER);
         taskTimerDisplay.setClickable(true);
         taskTimerDisplay.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -378,9 +392,10 @@ public class InterventionOverlay {
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT
         );
-        params.gravity = Gravity.TOP | Gravity.END;
-        params.x = dp(8);
+        params.gravity = Gravity.CENTER;
+        params.x = 0;
         params.y = dp(48);
+        taskParams = params;
 
         card.setOnTouchListener(new View.OnTouchListener() {
             private int lastAction;
@@ -388,6 +403,7 @@ public class InterventionOverlay {
             private int initialY;
             private float initialTouchX;
             private float initialTouchY;
+            private boolean isDragging = false;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -398,6 +414,7 @@ public class InterventionOverlay {
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
                         lastAction = event.getAction();
+                        isDragging = false;
                         return true;
 
                     case MotionEvent.ACTION_MOVE:
@@ -405,10 +422,12 @@ public class InterventionOverlay {
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
                         windowManager.updateViewLayout(root, params);
                         lastAction = event.getAction();
+                        isDragging = true;
+                        cancelAutoCenter();
                         return true;
 
                     case MotionEvent.ACTION_UP:
-                        if (lastAction == MotionEvent.ACTION_DOWN) {
+                        if (!isDragging) {
                             card.performClick();
                         }
                         return true;
@@ -436,8 +455,35 @@ public class InterventionOverlay {
             taskView = root;
             taskStartTimeMs = System.currentTimeMillis();
             startTaskTimer();
+            startAutoCenter();
         } catch (Exception e) {
             Log.e(TAG, "显示任务气泡失败", e);
+        }
+    }
+
+    private void startAutoCenter() {
+        cancelAutoCenter();
+        PrefsManager prefs = MindfulAccessibilityService.getPrefsManager();
+        int intervalSeconds = (prefs != null) ? prefs.getAutoCenterSeconds() : 60;
+
+        autoCenterRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (taskView != null && taskParams != null) {
+                    taskParams.gravity = Gravity.CENTER;
+                    taskParams.x = 0;
+                    taskParams.y = dp(48);
+                    windowManager.updateViewLayout(taskView, taskParams);
+                }
+            }
+        };
+        mainHandler.postDelayed(autoCenterRunnable, intervalSeconds * 1000L);
+    }
+
+    private void cancelAutoCenter() {
+        if (autoCenterRunnable != null) {
+            mainHandler.removeCallbacks(autoCenterRunnable);
+            autoCenterRunnable = null;
         }
     }
 
@@ -627,6 +673,7 @@ public class InterventionOverlay {
     }
 
     public void cleanup() {
+        cancelAutoCenter();
         stopTaskTimer();
         stopEntertainTimer();
 
@@ -637,6 +684,7 @@ public class InterventionOverlay {
         blockerView = null;
         taskView = null;
         entertainView = null;
+        taskParams = null;
     }
 
     private void removeView(View view) {
