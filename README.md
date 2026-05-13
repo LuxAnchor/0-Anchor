@@ -56,9 +56,9 @@
 
 ## 下载安装
 
-APK 下载：[releases/0-Anchor-v1.2.3.apk](./releases/0-Anchor-v1.2.3.apk)
+APK 下载：[releases/0-Anchor-v1.2.4.apk](./releases/0-Anchor-v1.2.4.apk)
 
-> 当前版本：v1.2.3
+> 当前版本：v1.2.4
 
 ## 使用前提
 
