@@ -358,8 +358,7 @@ public class InterventionOverlay {
 
         TextView taskLabel = new TextView(context);
         taskLabel.setText("任务：" + taskDescription);
-        taskLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-        taskLabel.setTextColor(0xFFFFFFFF);
+        taskLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         taskLabel.setTextColor(0xFFFFFFFF);
         taskLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         taskLabel.setGravity(Gravity.CENTER);
@@ -374,7 +373,7 @@ public class InterventionOverlay {
 
         taskTimerDisplay = new TextView(context);
         taskTimerDisplay.setText("00:00:00");
-        taskTimerDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        taskTimerDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         taskTimerDisplay.setTextColor(0xFF4CAF50);
         taskTimerDisplay.setTypeface(android.graphics.Typeface.MONOSPACE);
         taskTimerDisplay.setGravity(Gravity.CENTER);
@@ -429,6 +428,9 @@ public class InterventionOverlay {
                     case MotionEvent.ACTION_UP:
                         if (!isDragging) {
                             card.performClick();
+                        } else {
+                            // 拖动结束后，重新启动自动居中定时器
+                            startAutoCenter();
                         }
                         return true;
                 }

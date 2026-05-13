@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvAutoStartStatus;
     private TextView tvOverallStatus;
     private TextView tvCooldownValue;
+    private TextView tvAutoCenterValue;
 
     private Button btnAccessibility;
     private Button btnOverlay;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnManageApps;
     private Button btnDecreaseCooldown;
     private Button btnIncreaseCooldown;
+    private Button btnDecreaseAutoCenter;
+    private Button btnIncreaseAutoCenter;
 
     private AppConfigManager appConfigManager;
     private PrefsManager prefsManager;
@@ -59,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
         prefsManager = new PrefsManager(this);
 
         KeepAliveNotificationService.start(this);
+
+        // 彻底清理可能卡住的状态
+        prefsManager.setShowingBlocker(false);
+        prefsManager.setBlockingActive(false);
+        
+        // 如果有任务或娱乐模式在运行，说明状态可能有问题，需要清理
+        if (prefsManager.isTimerRunning() || prefsManager.isEntertainRunning()) {
+            Log.w("MainActivity", "检测到无效的状态，正在清理");
+            prefsManager.resetAllStates();
+        }
 
         String action = getIntent().getAction();
         if ("ACTION_ACCESSIBILITY_DISABLED".equals(action)) {
@@ -113,8 +127,12 @@ public class MainActivity extends AppCompatActivity {
         btnDecreaseCooldown = findViewById(R.id.btn_decrease_cooldown);
         btnIncreaseCooldown = findViewById(R.id.btn_increase_cooldown);
         tvCooldownValue = findViewById(R.id.tv_cooldown_value);
+        tvAutoCenterValue = findViewById(R.id.tv_auto_center_value);
+        btnDecreaseAutoCenter = findViewById(R.id.btn_decrease_auto_center);
+        btnIncreaseAutoCenter = findViewById(R.id.btn_increase_auto_center);
 
         updateCooldownValue();
+        updateAutoCenterValue();
     }
 
     private void setupListeners() {
@@ -142,11 +160,26 @@ public class MainActivity extends AppCompatActivity {
                 updateCooldownValue();
             }
         });
+
+        btnDecreaseAutoCenter.setOnClickListener(v -> {
+            prefsManager.decreaseAutoCenterSeconds();
+            updateAutoCenterValue();
+        });
+
+        btnIncreaseAutoCenter.setOnClickListener(v -> {
+            prefsManager.increaseAutoCenterSeconds();
+            updateAutoCenterValue();
+        });
     }
 
     private void updateCooldownValue() {
         int minutes = prefsManager.getCooldownDurationMinutes();
         tvCooldownValue.setText(minutes + " 分钟");
+    }
+
+    private void updateAutoCenterValue() {
+        int seconds = prefsManager.getAutoCenterSeconds();
+        tvAutoCenterValue.setText(seconds + " 秒");
     }
 
     private void openAppList() {

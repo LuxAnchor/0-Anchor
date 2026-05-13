@@ -27,7 +27,6 @@ public class MindfulAccessibilityService extends AccessibilityService {
     private static AppConfigManager appConfigManager;
 
     private final Set<String> targetPackages = new HashSet<>();
-    private volatile boolean isShowingBlocker = false;
     private volatile String lastForegroundPackage = "";
 
     private Handler mainHandler;
@@ -56,6 +55,19 @@ public class MindfulAccessibilityService extends AccessibilityService {
         appConfigManager = new AppConfigManager(this);
         mainHandler = new Handler(Looper.getMainLooper());
         checkHandler = new Handler(Looper.getMainLooper());
+
+        // 彻底清理可能卡住的状态
+        prefsManager.setShowingBlocker(false);
+        prefsManager.setBlockingActive(false);
+        
+        // 检查任务/娱乐计时器状态是否合理
+        if (prefsManager.isTimerRunning() || prefsManager.isEntertainRunning()) {
+            // 如果没有overlay在显示，说明进程可能被杀死了，清理这些状态
+            if (overlay == null) {
+                Log.w(TAG, "检测到无效的计时器状态，正在清理");
+                prefsManager.resetAllStates();
+            }
+        }
 
         loadTargetPackages();
 
@@ -156,7 +168,7 @@ public class MindfulAccessibilityService extends AccessibilityService {
         }
 
         // 检查是否正在显示拦截
-        if (isShowingBlocker) {
+        if (prefsManager.isShowingBlocker()) {
             return;
         }
 
@@ -173,11 +185,11 @@ public class MindfulAccessibilityService extends AccessibilityService {
     }
 
     private void showBlockerOverlay(String packageName) {
-        if (isShowingBlocker) {
+        if (prefsManager.isShowingBlocker()) {
             return;
         }
 
-        isShowingBlocker = true;
+        prefsManager.setShowingBlocker(true);
         prefsManager.setBlockingActive(true);
         prefsManager.setLastBlockedPackage(packageName);
 
@@ -197,7 +209,7 @@ public class MindfulAccessibilityService extends AccessibilityService {
     }
 
     private void onTaskModeSelected(String packageName, String taskDescription) {
-        isShowingBlocker = false;
+        prefsManager.setShowingBlocker(false);
         prefsManager.setBlockingActive(false);
         prefsManager.setTimerRunning(true, taskDescription);
 
@@ -209,7 +221,7 @@ public class MindfulAccessibilityService extends AccessibilityService {
     }
 
     private void onEntertainModeSelected(String packageName, int minutes) {
-        isShowingBlocker = false;
+        prefsManager.setShowingBlocker(false);
         prefsManager.setBlockingActive(false);
         prefsManager.startEntertainmentCooldown();
         prefsManager.setEntertainRunning(true, minutes * 60 * 1000L);
@@ -222,7 +234,7 @@ public class MindfulAccessibilityService extends AccessibilityService {
     private void onBlockerRejected(String packageName) {
         Log.i(TAG, "用户拒绝，选择返回桌面");
 
-        isShowingBlocker = false;
+        prefsManager.setShowingBlocker(false);
         prefsManager.setBlockingActive(false);
 
         performGoHome();
@@ -279,7 +291,6 @@ public class MindfulAccessibilityService extends AccessibilityService {
     @Override
     public void onInterrupt() {
         Log.w(TAG, "无障碍服务被中断");
-        // 不重置 isShowingBlocker，避免弹窗混乱
         // 尝试重启检测
         mainHandler.postDelayed(() -> {
             if (checkForegroundRunnable != null) {
@@ -291,6 +302,8 @@ public class MindfulAccessibilityService extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "无障碍服务正在销毁");
+
         instance = null;
 
         if (checkForegroundRunnable != null) {

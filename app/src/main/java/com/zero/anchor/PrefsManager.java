@@ -21,6 +21,8 @@ public class PrefsManager {
     private static final String KEY_BLOCKING_ACTIVE = "blocking_active";
     private static final String KEY_LAST_BLOCKED_PACKAGE = "last_blocked_package";
     private static final String KEY_TASK_AUTO_CENTER_SECONDS = "task_auto_center_seconds";
+    private static final String KEY_SHOWING_BLOCKER = "showing_blocker";
+    private static final String KEY_APP_KILLED = "app_killed";
 
     private static final int DEFAULT_COOLDOWN_MINUTES = 60;
     private static final int ENTERTAINMENT_COOLDOWN_MINUTES = 60;
@@ -133,7 +135,16 @@ public class PrefsManager {
     }
 
     public boolean isTimerRunning() {
-        return prefs.getBoolean(KEY_TIMER_RUNNING, false);
+        boolean running = prefs.getBoolean(KEY_TIMER_RUNNING, false);
+        if (!running) return false;
+        // 检查时间是否合理，如果时间已过很久，自动清理
+        long startTime = prefs.getLong(KEY_TIMER_START_TIME, 0);
+        // 如果开始时间是 0，说明是异常状态
+        if (startTime == 0) {
+            setTimerRunning(false, "");
+            return false;
+        }
+        return true;
     }
 
     public String getTaskDescription() {
@@ -182,11 +193,32 @@ public class PrefsManager {
         return prefs.getString(KEY_LAST_BLOCKED_PACKAGE, "");
     }
 
+    public void setShowingBlocker(boolean showing) {
+        prefs.edit().putBoolean(KEY_SHOWING_BLOCKER, showing).apply();
+    }
+
+    public boolean isShowingBlocker() {
+        return prefs.getBoolean(KEY_SHOWING_BLOCKER, false);
+    }
+
+    public void markAppKilled() {
+        prefs.edit().putBoolean(KEY_APP_KILLED, true).apply();
+    }
+
+    public boolean wasAppKilled() {
+        return prefs.getBoolean(KEY_APP_KILLED, false);
+    }
+
+    public void clearAppKilledFlag() {
+        prefs.edit().putBoolean(KEY_APP_KILLED, false).apply();
+    }
+
     public void resetAllStates() {
         prefs.edit()
             .putBoolean(KEY_TIMER_RUNNING, false)
             .putBoolean(KEY_ENTERTAIN_RUNNING, false)
             .putBoolean(KEY_BLOCKING_ACTIVE, false)
+            .putBoolean(KEY_SHOWING_BLOCKER, false)
             .putString(KEY_TASK_DESCRIPTION, "")
             .putLong(KEY_TIMER_START_TIME, 0)
             .putLong(KEY_ENTERTAIN_END_TIME, 0)

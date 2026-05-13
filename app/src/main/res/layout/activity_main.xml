@@ -340,6 +340,14 @@
                 android:text="设置娱乐模式冷却时间"
                 android:textSize="14sp"
                 android:textColor="#666666"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="娱乐时间结束后，需等待设定时间才能再次使用娱乐模式"
+                android:textSize="12sp"
+                android:textColor="#999999"
                 android:paddingBottom="12dp" />
 
             <LinearLayout
