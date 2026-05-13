@@ -49,6 +49,9 @@ captures/
 # Keystore files
 *.jks
 *.keystore
+# Keep signing folder for consistent signing
+!app/signing/
+!app/signing/*
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild

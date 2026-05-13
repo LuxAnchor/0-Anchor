@@ -6,6 +6,21 @@ android {
     namespace 'com.zero.anchor'
     compileSdk 34
 
+    signingConfigs {
+        release {
+            storeFile file('signing/release.keystore')
+            storePassword 'android123'
+            keyAlias 'anchor_key'
+            keyPassword 'android123'
+        }
+        debug {
+            storeFile file('signing/release.keystore')
+            storePassword 'android123'
+            keyAlias 'anchor_key'
+            keyPassword 'android123'
+        }
+    }
+
     defaultConfig {
         applicationId "com.zero.anchor"
         minSdk 24
@@ -17,9 +32,11 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
